@@ -18,6 +18,7 @@ def ticker():
             rate = requests.get('https://www.bitstamp.net/api/ticker/').json()
             rate = rate['last']
             rate = float(rate)
+            print rate
             data.update({'name': 'bitstamp'}, {'$set': {'exchange_rate': rate}}, True)
             sleep(5)
         except:
@@ -44,6 +45,7 @@ monitor_addresses = []
 
 for address in data.find({'bitcoin_address':{'$exists': True}},{'bitcoin_address': 1}):
     monitor_addresses.append(address['bitcoin_address'])
+    print address
 
 
 w = TxWatcher(monitor_addresses)

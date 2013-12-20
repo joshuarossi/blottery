@@ -7,7 +7,7 @@ import requests
 from time import sleep
 
 
-client = MongoClient('localhost', 3002)
+client = MongoClient('localhost', 27017)
 db = client.meteor
 data = db.data
 

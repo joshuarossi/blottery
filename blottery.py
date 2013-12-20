@@ -2,11 +2,30 @@ __author__ = 'josh'
 
 from pymongo import MongoClient
 from txwatcher import TxWatcher
-# import thread
+import thread
+import requests
+from time import sleep
+
 
 client = MongoClient('localhost', 3002)
 db = client.meteor
 data = db.data
+
+
+def ticker():
+    while 1:
+        try:
+            rate = requests.get('https://www.bitstamp.net/api/ticker/').json()
+            rate = rate['last']
+            rate = float(rate)
+            data.update({'name': 'bitstamp'}, {'$set': {'exchange_rate': rate}}, True)
+            sleep(5)
+        except:
+            pass
+
+
+thread.start_new_thread(ticker,())
+
 
 def tx_handler(tx):
     address = tx['x']['out'][0]['addr']
@@ -19,11 +38,13 @@ def tx_handler(tx):
     data.update({'name': 'blottery'}, {"$inc": {"balance": profit}})
     print "Received transaction for {} at address {}".format(value, address)
 
+
 monitor_addresses = []
 
 
 for address in data.find({'bitcoin_address':{'$exists': True}},{'bitcoin_address': 1}):
     monitor_addresses.append(address['bitcoin_address'])
+
 
 w = TxWatcher(monitor_addresses)
 w.on_tx += tx_handler

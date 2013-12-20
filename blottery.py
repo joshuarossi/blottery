@@ -7,9 +7,9 @@ import requests
 from time import sleep
 
 
-client = MongoClient('localhost', 27017)
-db = client.meteor
-data = db.data
+db = MongoClient('localhost', 27017)
+client = db.blottery
+data = client.data
 
 
 def ticker():
